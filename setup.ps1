@@ -20,6 +20,7 @@ Log "Starting setup..."
 Log "Resetting Winget sources..."
 winget source reset --force | Out-Null
 winget source update | Out-Null
+winget list --accept-source-agreements | Out-Null
 
 $commonArgs = "--exact --accept-package-agreements --accept-source-agreements"
 
@@ -43,7 +44,7 @@ $jobs = @()
 
 Log "Checking installed applications..."
 
-$installedPackages = winget list --accept-source-agreements
+$installedPackages = winget list --accept-source-agreements | Out-Null
 
 foreach ($app in $apps) {
 
