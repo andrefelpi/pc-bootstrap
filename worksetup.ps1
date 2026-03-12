@@ -22,8 +22,6 @@ winget source reset --force | Out-Null
 winget source update | Out-Null
 winget list --accept-source-agreements | Out-Null
 
-$commonArgs = "--exact --accept-package-agreements --accept-source-agreements"
-
 # Define applications to install
 $apps = @(
     @{Name="Visual Studio Code"; Id="Microsoft.VisualStudioCode"}
