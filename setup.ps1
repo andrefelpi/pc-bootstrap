@@ -108,9 +108,9 @@ while (($jobs | Where-Object { $_.State -eq "Running" }).Count -gt 0) {
     Clear-Host
 
     Write-Host ""
-    Write-Host "===================================="
-    Write-Host " Developer Machine Setup Dashboard"
-    Write-Host "===================================="
+    Write-Host "========================="
+    Write-Host " Machine Setup Dashboard"
+    Write-Host "========================="
     Write-Host ""
 
     foreach ($app in $apps) {
