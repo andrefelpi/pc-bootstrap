@@ -43,40 +43,33 @@ $jobs = @()
 
 Log "Checking installed applications..."
 
+$installedPackages = winget list
+
 foreach ($app in $apps) {
 
-    $installed = winget list --id $app.Id --exact | Select-String $app.Id
-
-    if ($installed) {
+    if ($installedPackages -match $app.Id) {
         Log "$($app.Name) already installed. Skipping."
         continue
     }
+
+    Log "Starting install: $($app.Name)"
 
     while (($jobs | Where-Object { $_.State -eq "Running" }).Count -ge $maxParallel) {
         Start-Sleep -Seconds 2
     }
 
-    Log "Starting install: $($app.Name)"
-
     $jobs += Start-Job -ScriptBlock {
-        param($name,$id,$installArgs,$log)
+        param($name,$id,$commonArgs)
 
-        function JobLog {
-            param($msg,$file)
-            $time = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-            Add-Content -Path $file -Value "$time - $msg"
-        }
+        Write-Host "Installing $name ..."
+        winget install --id $id $commonArgs
 
-        JobLog "Installing $name" $log
-        winget install --id $id $installArgs
-        JobLog "$name install finished" $log
-
-    } -ArgumentList $app.Name,$app.Id,$commonArgs,$logFile
+    } -ArgumentList $app.Name,$app.Id,$commonArgs
 }
 
 Log "Waiting for installations to complete..."
 
-$jobs | Wait-Job | Out-Null
+$jobs | Wait-Job | Receive-Job
 
 Log "All installations finished."
 
@@ -98,3 +91,5 @@ Write-Host ""
 Write-Host "Verify with:"
 Write-Host "git config --list"
 Write-Host ""
+
+Log "Log file saved to $logFile"
