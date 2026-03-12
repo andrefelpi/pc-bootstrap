@@ -35,7 +35,7 @@ $apps = @(
     @{Name="WinRAR"; Id="RARLab.WinRAR"}
     @{Name="Discord"; Id="Discord.Discord"}
     @{Name="OBS Studio"; Id="OBSProject.OBSStudio"}
-    @{Name="Foxit PDF Reader "; Id="Foxit.FoxitReader"}
+    @{Name="Foxit PDF Reader"; Id="Foxit.FoxitReader"}
 )
 
 # Limit parallel installations
@@ -44,7 +44,7 @@ $jobs = @()
 
 Log "Checking installed applications..."
 
-$installedPackages = winget list --accept-source-agreements | Out-Null
+$installedPackages = winget list --accept-source-agreements
 
 foreach ($app in $apps) {
 
@@ -60,12 +60,17 @@ foreach ($app in $apps) {
     }
 
     $jobs += Start-Job -ScriptBlock {
-        param($name,$id,$commonArgs)
+        param($name,$id)
 
         Write-Host "Installing $name ..."
-        winget install --id $id $commonArgs
 
-    } -ArgumentList $app.Name,$app.Id,$commonArgs
+        winget install --id $id `
+            --exact `
+            --silent `
+            --disable-interactivity `
+            --accept-package-agreements `
+            --accept-source-agreements
+    } -ArgumentList $app.Name,$app.Id
 }
 
 Log "Waiting for installations to complete..."
@@ -75,7 +80,10 @@ $jobs | Wait-Job | Receive-Job
 Log "All installations finished."
 
 Log "Running upgrade pass..."
-winget upgrade --all --accept-package-agreements --accept-source-agreements
+winget upgrade --all `
+    --silent `
+    --accept-package-agreements `
+    --accept-source-agreements
 
 Log "Setup finished."
 
