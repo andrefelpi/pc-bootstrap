@@ -2,6 +2,8 @@
 
 Automates first-time setup of a Windows developer/gaming machine using `winget`.
 
+This script is intended for personal use and can be customized by modifying the list of apps to install. It is not meant for enterprise deployment or production use without further enhancements (e.g. error handling, configuration management).
+
 ## What this script does
 
 `setup.ps1` performs the following actions:
@@ -46,6 +48,11 @@ Or from an already-open PowerShell session:
 
 ```powershell
 .\setup.ps1
+```
+
+In case you want to run the script without downloading it, you can execute it directly with the RAW GitHub URL:
+```
+powershell irm https://raw.githubusercontent.com/andrefelpi/pc-bootstrap/refs/heads/main/setup.ps1 | iex
 ```
 
 ## Logging

@@ -23,6 +23,7 @@ winget source update | Out-Null
 
 $commonArgs = "--exact --accept-package-agreements --accept-source-agreements"
 
+# Define applications to install
 $apps = @(
     @{Name="Steam"; Id="Valve.Steam"}
     @{Name="Visual Studio Code"; Id="Microsoft.VisualStudioCode"}
@@ -35,6 +36,7 @@ $apps = @(
     @{Name="OBS Studio"; Id="OBSProject.OBSStudio"}
 )
 
+# Limit parallel installations
 $maxParallel = 3
 $jobs = @()
 
