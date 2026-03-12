@@ -3,6 +3,7 @@
 # ================================
 
 $logFile = "$PSScriptRoot\setup.log"
+$results = @()
 
 function Log {
     param([string]$message)
@@ -16,13 +17,12 @@ function Log {
 
 Log "Starting setup..."
 
-# Reset winget sources
 Log "Resetting Winget sources..."
 winget source reset --force | Out-Null
 winget source update | Out-Null
 winget list --accept-source-agreements | Out-Null
 
-# Define applications to install
+# Applications
 $apps = @(
     @{Name="Visual Studio Code"; Id="Microsoft.VisualStudioCode"}
     @{Name="Visual Studio Community"; Id="Microsoft.VisualStudio.Community"}
@@ -34,9 +34,9 @@ $apps = @(
     @{Name="Foxit PDF Reader"; Id="Foxit.FoxitReader"}
 )
 
-# Limit parallel installations
 $maxParallel = 3
 $jobs = @()
+$statusTable = @{}
 
 Log "Checking installed applications..."
 $installedPackages = winget list --accept-source-agreements
@@ -44,20 +44,28 @@ $installedPackages = winget list --accept-source-agreements
 foreach ($app in $apps) {
 
     if ($installedPackages -match $app.Id) {
+
         Log "$($app.Name) already installed. Skipping."
+
+        $results += [PSCustomObject]@{
+            Name   = $app.Name
+            Status = "Skipped"
+        }
+
+        $statusTable[$app.Name] = "Skipped"
         continue
     }
 
-    Log "Starting install: $($app.Name)"
-
     while (($jobs | Where-Object { $_.State -eq "Running" }).Count -ge $maxParallel) {
-        Start-Sleep -Seconds 2
+        Start-Sleep -Milliseconds 500
     }
 
-    $jobs += Start-Job -ScriptBlock {
-        param($name,$id)
+    Log "Queueing install: $($app.Name)"
+    $statusTable[$app.Name] = "Installing"
 
-        Write-Host "Installing $name ..."
+    $jobs += Start-Job -ScriptBlock {
+
+        param($name,$id)
 
         winget install --id $id `
             --exact `
@@ -65,12 +73,61 @@ foreach ($app in $apps) {
             --disable-interactivity `
             --accept-package-agreements `
             --accept-source-agreements
+
+        if ($LASTEXITCODE -eq 0) {
+            return [PSCustomObject]@{ Name=$name; Status="Installed" }
+        }
+        else {
+            return [PSCustomObject]@{ Name=$name; Status="Failed" }
+        }
+
     } -ArgumentList $app.Name,$app.Id
 }
 
-Log "Waiting for installations to complete..."
+# ================================
+# LIVE DASHBOARD
+# ================================
 
-$jobs | Wait-Job | Receive-Job
+while (($jobs | Where-Object { $_.State -eq "Running" }).Count -gt 0) {
+
+    foreach ($job in $jobs) {
+
+        if ($job.State -eq "Completed" -and -not $job.HasMoreData) { continue }
+
+        if ($job.State -eq "Completed") {
+
+            $result = Receive-Job $job
+            $statusTable[$result.Name] = $result.Status
+
+            $results += $result
+        }
+    }
+
+    Clear-Host
+
+    Write-Host ""
+    Write-Host "===================================="
+    Write-Host " Developer Machine Setup Dashboard"
+    Write-Host "===================================="
+    Write-Host ""
+
+    foreach ($app in $apps) {
+
+        $name = $app.Name
+
+        if ($statusTable.ContainsKey($name)) {
+            $state = $statusTable[$name]
+        } else {
+            $state = "Waiting"
+        }
+
+        "{0,-45} {1}" -f $name, $state
+    }
+
+    Start-Sleep -Seconds 1
+}
+
+$jobs | Wait-Job | Receive-Job | ForEach-Object { $results += $_ }
 
 Log "All installations finished."
 
@@ -83,12 +140,18 @@ winget upgrade --all `
 Log "Setup finished."
 
 Write-Host ""
+Write-Host "================================="
+Write-Host " INSTALL REPORT"
+Write-Host "================================="
+
+$results | Sort-Object Name | Format-Table -AutoSize
+
+Write-Host ""
 Write-Host "======================================"
 Write-Host " Git configuration required"
 Write-Host "======================================"
 Write-Host ""
-Write-Host "Restart your terminal then run:"
-Write-Host ""
+
 Write-Host 'git config --global user.name "Your Name"'
 Write-Host 'git config --global user.email "your@email.com"'
 Write-Host ""
