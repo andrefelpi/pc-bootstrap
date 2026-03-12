@@ -55,7 +55,7 @@ Or from an already-open PowerShell session:
 
 In case you want to run the script without downloading it, you can execute it directly with the RAW GitHub URL:
 ```
-powershell irm https://raw.githubusercontent.com/andrefelpi/pc-bootstrap/main/worksetup.ps1 | iex
+powershell irm https://raw.githubusercontent.com/andrefelpi/pc-bootstrap/main/"FileName"".ps1 | iex
 ```
 
 ## Logging
