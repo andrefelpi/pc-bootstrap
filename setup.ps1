@@ -43,7 +43,7 @@ $jobs = @()
 
 Log "Checking installed applications..."
 
-$installedPackages = winget list
+$installedPackages = winget list --accept-source-agreements
 
 foreach ($app in $apps) {
 
