@@ -4,6 +4,8 @@ Automates first-time setup of a Windows developer/gaming machine using `winget`.
 
 This script is intended for personal use and can be customized by modifying the list of apps to install. It is not meant for enterprise deployment or production use without further enhancements (e.g. error handling, configuration management).
 
+This README explains in the context of the `setup.ps1` script, other scripts may have different purposes and requirements(generaly only the programs that are installed).
+
 ## What this script does
 
 `setup.ps1` performs the following actions:
@@ -27,6 +29,7 @@ This script is intended for personal use and can be customized by modifying the 
 - WinRAR (`RARLab.WinRAR`)
 - Discord (`Discord.Discord`)
 - OBS Studio (`OBSProject.OBSStudio`)
+- Foxit PDF Reader (`Foxit.FoxitReader`)
 
 ## Prerequisites
 
@@ -52,7 +55,7 @@ Or from an already-open PowerShell session:
 
 In case you want to run the script without downloading it, you can execute it directly with the RAW GitHub URL:
 ```
-powershell irm https://raw.githubusercontent.com/andrefelpi/pc-bootstrap/refs/heads/main/setup.ps1 | iex
+powershell irm https://raw.githubusercontent.com/andrefelpi/pc-bootstrap/refs/heads/main/"FileName".ps1 | iex
 ```
 
 ## Logging

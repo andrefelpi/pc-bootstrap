@@ -25,15 +25,13 @@ $commonArgs = "--exact --accept-package-agreements --accept-source-agreements"
 
 # Define applications to install
 $apps = @(
-    @{Name="Steam"; Id="Valve.Steam"}
     @{Name="Visual Studio Code"; Id="Microsoft.VisualStudioCode"}
     @{Name="Visual Studio Community"; Id="Microsoft.VisualStudio.Community"}
     @{Name="Git"; Id="Git.Git"}
-    @{Name="Brave Browser"; Id="BraveSoftware.BraveBrowser"}
-    @{Name="Battle.net"; Id="Blizzard.BattleNet"}
-    @{Name="WinRAR"; Id="RARLab.WinRAR"}
-    @{Name="Discord"; Id="Discord.Discord"}
     @{Name="OBS Studio"; Id="OBSProject.OBSStudio"}
+    @{Name="Local"; Id="Flywheel.Local"}
+    @{Name="pgAdmin"; Id="PostgreSQL.pgAdmin"}
+    @{Name="Microsoft SQL Server Management Studio"; Id="Microsoft.SQLServerManagementStudio.22"}
     @{Name="Foxit PDF Reader "; Id="Foxit.FoxitReader"}
 )
 
