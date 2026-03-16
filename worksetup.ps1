@@ -32,6 +32,8 @@ $apps = @(
     @{Name="pgAdmin"; Id="PostgreSQL.pgAdmin"}
     @{Name="Microsoft SQL Server Management Studio"; Id="Microsoft.SQLServerManagementStudio.22"}
     @{Name="Foxit PDF Reader"; Id="Foxit.FoxitReader"}
+    @{Name="Postman"; Id="Postman.Postman"}
+    @{Name="PostgreSQL18"; Id="PostgreSQL.PostgreSQL.18"}
 )
 
 $maxParallel = 3
